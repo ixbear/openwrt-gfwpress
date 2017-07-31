@@ -55,5 +55,5 @@ Gfwpress for OpenWrt
   [1]: https://github.com/chinashiyu/gfw.press.c
   [2]: http://downloads.openwrt.org/barrier_breaker/14.07/ar71xx/nand/ "SDK 下载"
   [3]: https://github.com/peter-tank/luci-app-gfwpress
-  [B]: https://api.bintray.com/packages/petertank/opkg/gfwpress/images/download.svg
-  [4]: https://bintray.com/petertank/opkg/gfwpress/_latestVersion "预编译 IPK 下载"
+  [B]: https://api.bintray.com/packages/petertank/gfwpress/opkg/images/download.svg
+  [4]: https://bintray.com/petertank/gfwpress/opkg/_latestVersion "预编译 IPK 下载"
