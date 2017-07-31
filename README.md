@@ -1,7 +1,7 @@
 gfwpress for OpenWrt
 ===
 
-[![Download][B]][2]  
+[![Download][B]][4]  
 
 简介
 ---
@@ -55,3 +55,5 @@ gfwpress for OpenWrt
   [1]: https://github.com/chinashiyu/gfw.press.c
   [2]: http://downloads.openwrt.org/barrier_breaker/14.07/ar71xx/nand/ "SDK 下载"
   [3]: https://github.com/peter-tank/luci-app-gfwpress
+  [B]: https://api.bintray.com/packages/peter-tank/opkg/shadowsocks-libev/images/download.svg
+  [4]: https://bintray.com/peter-tank/opkg/shadowsocks-libev/_latestVersion "预编译 IPK 下载"
