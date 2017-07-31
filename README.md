@@ -33,7 +33,7 @@ gfwpress for OpenWrt
    tar xjf OpenWrt-SDK-ar71xx-for-linux-x86_64-gcc-4.8-linaro_uClibc-0.9.33.2.tar.bz2
    cd OpenWrt-SDK-ar71xx-*
    # 获取 gfwpress
-   git clone https://github.com/gfwpress/openwrt-gfwpress.git package/gfwpress
+   git clone https://github.com/peter-tank/openwrt-gfwpress.git package/gfwpress
    # 选择要编译的包 Network -> gfwpress
    make menuconfig
    # 开始编译
