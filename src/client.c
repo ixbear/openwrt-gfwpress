@@ -468,7 +468,7 @@ int load_config() {
 
 	FILE* file;
 
-	if ((file = fopen("client.json", "r+")) == NULL) {
+	if ((file = fopen("/var/etc/gfwpress.json", "r+")) == NULL) {
 
 		return -1;
 
