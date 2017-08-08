@@ -30,6 +30,7 @@
 #include <openssl/ssl.h>
 #include <openssl/evp.h>
 #include <openssl/md5.h>
+#include <getopt.h>
 
 extern int get_password_key(char * password, char * key);
 
@@ -71,6 +72,9 @@ static char * password;
 
 static char * key;
 
+static char * in_fname = "gfwpress.json";
+
+static int socket_timeout = 180;
 /** IO线程参数结构 */
 struct IO {
 
@@ -186,6 +190,8 @@ void *thread_io_agent(void *_io) {
 		free(out);
 
 		if (sendl < 1) {
+			
+			_log("Error sending to server...");
 
 			break;
 
@@ -212,7 +218,9 @@ void *thread_io_server(void *_io) {
 		int head_len = recv(io.socket_server, head, ENCRYPT_SIZE, MSG_NOSIGNAL);
 
 		if (head_len != ENCRYPT_SIZE) {
-
+			
+			_log("Error response recv from server...[encrypt_head_size_error#server.fail]");
+			
 			free(head);
 
 			break;
@@ -224,6 +232,8 @@ void *thread_io_server(void *_io) {
 		char *head_out = malloc(SIZE_SIZE + 1);
 
 		if (decrypt(key, head, head_len, head_out) == -1) {
+			
+			_log("Error response head recv from server...[head_decrypt_error]");
 
 			free(head_out);
 
@@ -238,6 +248,8 @@ void *thread_io_server(void *_io) {
 		int *sizes = malloc(2 * sizeof(int));
 
 		if (get_block_sizes(head_out, sizes) == -1) {
+			
+			_log("Out of memeory.");
 
 			free(head_out);
 
@@ -277,6 +289,8 @@ void *thread_io_server(void *_io) {
 		}
 
 		if (_size != size) {
+			
+			_log("Error response recv from server...[sock_data_lost#drop]");
 
 			free(in);
 
@@ -291,6 +305,8 @@ void *thread_io_server(void *_io) {
 		char * out = malloc(outl + 1);
 
 		if (decrypt(key, in, data, out) == -1) {
+			
+			_log("Error response data recv from server...[data_decrypt_error#drop]");
 
 			free(in);
 
@@ -310,6 +326,8 @@ void *thread_io_server(void *_io) {
 		free(out);
 
 		if (sendl < 1) {
+			
+			_log("Error send data to client...[data_client_error]");
 
 			break;
 
@@ -328,7 +346,7 @@ void set_timeout(int socket) {
 
 	struct timeval tv;
 
-	tv.tv_sec = 180;
+	tv.tv_sec = socket_timeout;
 
 	tv.tv_usec = 0;
 
@@ -425,13 +443,14 @@ void *thread_client(void *_socket_agent) {
 
 }
 
-int set_config(char *_server_host, char *_server_port, char *_password, char *_listen_port) {
+int set_config(char *_server_host, char *_server_port, char *_password, char *_listen_port, char *_timeout) {
 
 	if (strlen(_server_host) < 7 || strlen(_server_port) < 2 || strlen(_listen_port) < 2 || strlen(_password) < 8) {
-
+		_log("configure_string_length_checking_failed.");
 		return -1;
 
 	}
+	if (strlen(_timeout) > 1) socket_timeout = atoi(_timeout);
 
 	server_host = _server_host;
 
@@ -440,7 +459,7 @@ int set_config(char *_server_host, char *_server_port, char *_password, char *_l
 	listen_port = atoi(_listen_port);
 
 	password = _password;
-
+	
 	key = malloc(25);
 
 	get_password_key(password, key);
@@ -463,13 +482,15 @@ int load_config() {
 	char *_password = malloc(32);
 
 	char *_listen_port = malloc(8);
+	
+	char *_timeout = malloc(8);
 
 	char * text = malloc(2048);
 
 	FILE* file;
 
-	if ((file = fopen("/var/etc/gfwpress.json", "r+")) == NULL) {
-
+	if ((file = fopen(in_fname, "r+")) == NULL) {
+		_log("config-file cannot access.");
 		return -1;
 
 	}
@@ -485,7 +506,7 @@ int load_config() {
 	}
 
 	if (pos == 0) {
-
+		_log("config-file BLANK.");
 		return -1;
 
 	}
@@ -513,17 +534,18 @@ int load_config() {
 	free(text);
 
 	if (_pos == 0) {
-
+		_log("config-file not valid.");
 		return -1;
 
 	}
 
 	_text[_pos] = '\0';
 
-	sscanf(_text, "ServerHost:%[^,],ServerPort:%[0-9],ProxyPort:%[0-9],Password:%[^,]",
-		_server_host, _server_port, _listen_port, _password);
+	_log(_text);
+	sscanf(_text, "server:%[^,],server_port:%[0-9],local_port:%[0-9],password:%[^,],timeout:%[0-9]",
+		_server_host, _server_port, _listen_port, _password, _timeout);
 
-	return set_config(_server_host, _server_port, _password, _listen_port);
+	return set_config(_server_host, _server_port, _password, _listen_port, _timeout);
 
 }
 
@@ -545,11 +567,11 @@ void print_config() {
 	_password[pl] = '\0';
 
 	/**
-	 printf("\n[%s] ServerHost：%s\n[%s] ServerPort：%d\n[%s] ProxyPort：%d\n[%s] Password：%s\n", 
+	 printf("\n[%s] server：%s\n[%s] server_port：%d\n[%s] local_port：%d\n[%s] password：%s\n", 
 	 	_datetime, server_host, _datetime, server_port, _datetime, listen_port, _datetime, _password);
 	 */
-	printf("\n[%s] 节点地址：%s\n[%s] 节点端口：%d\n[%s] 代理端口：%d\n[%s] 连接密码：%s\n",
-		_datetime, server_host, _datetime, server_port, _datetime, listen_port, _datetime, _password);
+	printf("\n[%s] 节点地址：%s\n[%s] 节点端口：%d\n[%s] 代理端口：%d\n[%s] 连接密码：[%s]\n[%s] Timerout: [%d]\n",
+		_datetime, server_host, _datetime, server_port, _datetime, listen_port, _datetime, _password, _datetime, socket_timeout);
 
 	free(_datetime);
 
@@ -640,7 +662,15 @@ void* main_thread() {
 
 		pthread_t thread_id;
 
-		pthread_create(&thread_id, NULL, thread_client, (void *) &socket_agent);
+		int pthread_agent = pthread_create(&thread_id, NULL, thread_client, (void *) &socket_agent);
+
+		if ( pthread_agent != 0) {
+
+			_log("pthread_create error!");
+
+			continue;
+
+		}
 
 	}
 
@@ -658,10 +688,32 @@ pthread_t thread_id;
  * 客户端主程序
  */
 int main(int argc, char *argv[]) {
+	int opt = 0;
+
+	while ((opt = getopt(argc, argv, ":c:")) != -1) {
+		switch(opt) {
+		case 'c':
+			in_fname = optarg;
+			break;
+		case ':':
+			printf("-%c without filename\n", optopt);
+			break;
+		case '?':
+			printf("unknow option -%c\n", optopt);
+			break;
+	}
+	break;
+	}
 
 	_log("GFW.Press客户端开始运行......");
 
-	pthread_create(&thread_id, NULL, main_thread, NULL);
+	int pl = strlen(in_fname) + 15;
+	char * message = malloc(pl);
+	sprintf(message, "config-file: %s", in_fname);
+	_log(message);
+	free(message);
+
+	int pthread_agent = pthread_create(&thread_id, NULL, main_thread, NULL);
 
 	pthread_join(thread_id, NULL);
 
