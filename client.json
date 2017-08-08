@@ -1,0 +1,7 @@
+		{
+		    "server": "1.2.3.4",
+		    "server_port": "10663",
+		    "local_port": 3128,
+		    "password":" "12345678",
+		    "timeout": 120,
+		}
