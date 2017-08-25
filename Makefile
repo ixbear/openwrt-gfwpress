@@ -6,7 +6,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=gfwpress
 PKG_VERSION:=0.2
-PKG_RELEASE:=1
+PKG_RELEASE:=2
 
 PKG_LICENSE:=CC0-1.0
 PKG_MAINTAINER:=Peter-tank
@@ -72,7 +72,7 @@ endef
 
 define Package/gfwpress/install
 	$(INSTALL_DIR) $(1)/usr/bin
-	$(INSTALL_BIN) $(PKG_BUILD_DIR)/gfwpress $(1)/usr/bin/
+	$(INSTALL_BIN) $(PKG_BUILD_DIR)/gfwpress $(1)/usr/bin/gfw-redir
 #	$(INSTALL_DIR) $(1)/etc
 #	#$(INSTALL_CONF) files/client.json $(1)/var/etc/gfwpress.json
 endef
