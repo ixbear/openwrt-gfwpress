@@ -62,7 +62,8 @@ Gfwpress for OpenWrt
  ---
   - 在LEDE/OPENWRT系统里
 
-   ```vi /etc/config/gfwpress.json
+   ```bash
+   vi /etc/config/gfwpress.json
 		{
 		    "server": "67.209.179.104",
 		    "server_port": "10011",
