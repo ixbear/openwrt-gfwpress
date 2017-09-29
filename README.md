@@ -62,7 +62,7 @@ Gfwpress for OpenWrt
  ---
   - 在LEDE/OPENWRT系统里
 
-   ```bash
+   ```bash
    vi /etc/config/gfwpress.json
 		{
 		    "server": "67.209.179.104",
@@ -70,13 +70,14 @@ Gfwpress for OpenWrt
 		    "local_port": 3128,
 		    "password":" "Crxn9nfMz7",
 		    "timeout": 120,
-		}
+		    }
    ```
 
 进入luci - system - startup - "Local Startup"写入如下一行（或者直接编辑/etc/rc.local）
-   ```
-/usr/bin/gfw-redir -c /etc/config/gfwpress.json >/dev/null 2>&1
 
-exit 0
+   ```bash
+   /usr/bin/gfw-redir -c /etc/config/gfwpress.json >/dev/null 2>&1
+   exit 0
    ```
+   
 然后reboot
