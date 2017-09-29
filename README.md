@@ -69,6 +69,7 @@ Gfwpress for OpenWrt
 		    "local_port": 3128,
 		    "password":" "Crxn9nfMz7",
 		    "timeout": 120,
+		}
    ```
 
 进入luci - system - startup - "Local Startup"写入如下一行（或者直接编辑/etc/rc.local）
