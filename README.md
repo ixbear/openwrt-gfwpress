@@ -57,3 +57,27 @@ Gfwpress for OpenWrt
   [3]: https://github.com/peter-tank/luci-app-gfwpress
   [B]: https://api.bintray.com/packages/petertank/opkg/openwrt-gfwpress/images/download.svg
   [4]: https://bintray.com/petertank/opkg/openwrt-gfwpress/_latestVersion "预编译 IPK 下载"
+  
+ 使用
+ ---
+ vi /etc/config/gfwpress.json
+		{
+		    "server": "67.209.179.104",
+		    "server_port": "10011",
+		    "local_port": 3128,
+		    "password":" "Crxn9nfMz7",
+		    "timeout": 120,
+
+
+
+$ /usr/sbin/gfwpress
+or
+auto-startup
+
+进入luci - system - startup - "Local Startup"写入如下一行（或者直接编辑/etc/rc.local）
+
+/usr/bin/gfw-redir -c /etc/config/gfwpress.json >/dev/null 2>&1
+
+exit 0
+
+然后reboot
