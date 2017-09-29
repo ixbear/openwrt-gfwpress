@@ -60,6 +60,7 @@ Gfwpress for OpenWrt
   
  使用
  ---
+    ```
  vi /etc/config/gfwpress.json
 		{
 		    "server": "67.209.179.104",
@@ -69,15 +70,12 @@ Gfwpress for OpenWrt
 		    "timeout": 120,
 
 
-
-$ /usr/sbin/gfwpress
-or
-auto-startup
+   ```
 
 进入luci - system - startup - "Local Startup"写入如下一行（或者直接编辑/etc/rc.local）
-
+   ```
 /usr/bin/gfw-redir -c /etc/config/gfwpress.json >/dev/null 2>&1
 
 exit 0
-
+   ```
 然后reboot
